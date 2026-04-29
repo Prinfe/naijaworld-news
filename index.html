@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NaijaWorld News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #008751;
+      --white: #f5f0e8;
+      --ink: #1a1a1a;
+      --gold: #c9a84c;
+      --card-bg: #ffffff;
+      --border: #e2ddd4;
+      --global: #1a3a5c;
+      --business: #7b2d8b;
+      --science: #0d7a5f;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--white);
+      font-family: 'Source Sans 3', sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--green);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px 10px;
+    }
+
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .brand-name span { color: var(--gold); }
+
+    .brand-tagline {
+      font-size: 0.62rem;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .refresh-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-family: 'Source Sans 3', sans-serif;
+      cursor: pointer;
+    }
+
+    .header-bar {
+      background: var(--gold);
+      padding: 5px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .last-updated { font-size: 0.68rem; color: rgba(26,26,26,0.75); }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 1px;
+    }
+
+    .pulse-dot {
+      width: 7px; height: 7px;
+      background: #e74c3c;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.6); }
+    }
+
+    .countdown-bar-wrap { background: rgba(0,0,0,0.1); height: 3px; }
+    .countdown-bar { height: 3px; background: #e74c3c; width: 100%; transition: width 1s linear; }
+
+    .main-tabs {
+      display: flex;
+      background: var(--card-bg);
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 86px;
+      z-index: 90;
+    }
+
+    .main-tab {
+      flex: 1;
+      padding: 13px 8px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      text-transform: uppercase;
+    }
+
+    .main-tab.active-ng { color: var(--green); border-bottom-color: var(--green); }
+    .main-tab.active-gl { color: var(--global); border-bottom-color: var(--global); }
+
+    .sub-tabs {
+      display: none;
+      background: #f0ece4;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 134px;
+      z-index: 89;
+    }
+
+    .sub-tabs.visible { display: flex; }
+
+    .sub-tab {
+      flex: 1;
+      padding: 9px 4px;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #aaa;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .sub-tab.active-world    { color: var(--global);   border-bottom-color: var(--global); }
+    .sub-tab.active-business { color: var(--business); border-bottom-color: var(--business); }
+    .sub-tab.active-science  { color: var(--science);  border-bottom-color: var(--science); }
+
+    .section { display: none; padding: 16px 14px 90px; }
+    .section.active { display: block; }
+
+    .section-label {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot-ng  { background: var(--green); }
+    .dot-gl  { background: var(--global); }
+    .dot-biz { background: var(--business); }
+    .dot-sci { background: var(--science); }
+
+    .cards-grid { display: flex; flex-direction: column; gap: 14px; }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      animation: fadeUp 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    .card.is-new { border-left: 3px solid #e74c3c; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(1)  { animation-delay: 0.04s; }
+    .card:nth-child(2)  { animation-delay: 0.08s; }
+    .card:nth-child(3)  { animation-delay: 0.12s; }
+    .card:nth-child(4)  { animation-delay: 0.16s; }
+    .card:nth-child(5)  { animation-delay: 0.20s; }
+    .card:nth-child(6)  { animation-delay: 0.24s; }
+    .card:nth-child(7)  { animation-delay: 0.28s; }
+    .card:nth-child(8)  { animation-delay: 0.32s; }
+    .card:nth-child(9)  { animation-delay: 0.36s; }
+    .card:nth-child(10) { animation-delay: 0.40s; }
+
+    .card-image {
+      width: 100%; height: 165px;
+      object-fit: cover; display: block;
+    }
+
+    .card-image-placeholder {
+      width: 100%; height: 165px;
+      background: linear-gradient(135deg, #e8e3d8, #d0cab8);
+      display: flex; align-items: center;
+      justify-content: center; font-size: 2.2rem;
+    }
+
+    .card-body { padding: 11px 14px 13px; }
+
+    .card-source {
+      font-size: 0.63rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      margin-bottom: 5px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .source-ng  { color: var(--green); }
+    .source-gl  { color: var(--global); }
+    .source-biz { color: var(--business); }
+    .source-sci { color: var(--science); }
+
+    .new-badge {
+      background: #e74c3c; color: white;
+      font-size: 0.52rem; font-weight: 700;
+      letter-spacing: 1px; padding: 2px 5px;
+      border-radius: 3px; text-transform: uppercase;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.97rem; font-weight: 700;
+      line-height: 1.35; margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-size: 0.79rem; color: #666;
+      line-height: 1.5; margin-bottom: 7px;
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .card-time { font-size: 0.67rem; color: #bbb; }
+
+    .loading {
+      display: flex; flex-direction: column;
+      align-items: center; padding: 55px 20px;
+      gap: 13px; color: #999; font-size: 0.83rem;
+    }
+
+    .spinner {
+      width: 34px; height: 34px;
+      border: 3px solid #ddd;
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      background: #fff5f5; border: 1px solid #ffc9c9;
+      border-radius: 10px; padding: 20px;
+      text-align: center; color: #c0392b; font-size: 0.84rem;
+    }
+
+    .retry-btn {
+      margin-top: 10px; padding: 8px 20px;
+      background: #c0392b; color: white;
+      border: none; border-radius: 20px;
+      cursor: pointer; font-size: 0.8rem;
+      display: inline-block;
+    }
+
+    .footer-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--ink); color: rgba(255,255,255,0.45);
+      text-align: center; padding: 10px;
+      font-size: 0.62rem; letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <div>
+        <div class="brand-name">Naija<span>World</span></div>
+        <div class="brand-tagline">Live News &bull; Continuous Updates</div>
+      </div>
+      <button class="refresh-btn" onclick="manualRefresh()">⟳ Refresh</button>
+    </div>
+    <div class="header-bar">
+      <span class="last-updated" id="last-updated">Fetching news...</span>
+      <div class="live-badge">
+        <div class="pulse-dot"></div>
+        <span id="countdown-label">LIVE</span>
+      </div>
+    </div>
+    <div class="countdown-bar-wrap">
+      <div class="countdown-bar" id="countdown-bar"></div>
+    </div>
+  </header>
+
+  <div class="main-tabs">
+    <div class="main-tab active-ng" id="mtab-ng" onclick="switchMain('nigeria')">🇳🇬 Nigerian News</div>
+    <div class="main-tab" id="mtab-gl" onclick="switchMain('global')">🌍 Global News</div>
+  </div>
+
+  <div class="sub-tabs" id="sub-tabs">
+    <div class="sub-tab active-world"  id="stab-world"    onclick="switchSub('world')">🌐 World</div>
+    <div class="sub-tab"              id="stab-business"  onclick="switchSub('business')">💼 Business</div>
+    <div class="sub-tab"              id="stab-science"   onclick="switchSub('science')">💉 Science & Health</div>
+  </div>
+
+  <div class="section active" id="section-nigeria">
+    <div class="section-label"><span class="dot dot-ng"></span> Nigerian Headlines</div>
+    <div class="cards-grid" id="cards-nigeria">
+      <div class="loading"><div class="spinner"></div><span>Loading Nigerian news...</span></div>
+    </div>
+  </div>
+
+  <div class="section" id="section-world">
+    <div class="section-label"><span class="dot dot-gl"></span> World Headlines</div>
+    <div class="cards-grid" id="cards-world">
+      <div class="loading"><div class="spinner"></div><span>Loading world news...</span></div>
+    </div>
+  </div>
+
+  <div class="section" id="section-business">
+    <div class="section-label"><span class="dot dot-biz"></span> Business & Economy</div>
+    <div class="cards-grid" id="cards-business">
+      <div class="loading"><div class="spinner"></div><span>Loading business news...</span></div>
+    </div>
+  </div>
+
+  <div class="section" id="section-science">
+    <div class="section-label"><span class="dot dot-sci"></span> Science & Health</div>
+    <div class="cards-grid" id="cards-science">
+      <div class="loading"><div class="spinner"></div><span>Loading science & health news...</span></div>
+    </div>
+  </div>
+
+  <div class="footer-bar">NAIJAWORLD NEWS &bull; LIVE RSS &bull; NO LIMITS</div>
+
+  <script>
+    // ── FEEDS ──────────────────────────────────────────────────────────────────
+    const FEEDS = {
+      nigeria:  [
+        'https://www.vanguardngr.com/feed/',
+        'https://punchng.com/feed/'
+      ],
+      world: [
+        'https://feeds.bbci.co.uk/news/world/rss.xml',
+        'https://www.aljazeera.com/xml/rss/all.xml'
+      ],
+      business: [
+        'https://feeds.bbci.co.uk/news/business/rss.xml',
+        'https://feeds.content.dowjones.io/public/rss/mw_realtimeheadlines'
+      ],
+      science: [
+        'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+        'https://www.sciencedaily.com/rss/top/health.xml'
+      ]
+    };
+
+    // Free CORS proxy — no key, no limits
+    const PROXY = 'https://api.allorigins.win/raw?url=';
+
+    // ── STATE ──────────────────────────────────────────────────────────────────
+    let activeMain  = 'nigeria';
+    let activeSub   = 'world';
+    let seenUrls    = { nigeria: new Set(), world: new Set(), business: new Set(), science: new Set() };
+    let fetchedOnce = { nigeria: false, world: false, business: false, science: false };
+    let refreshTimer = null;
+    let countdownInterval = null;
+    const INTERVAL_SEC = 30 * 60;
+    let secondsLeft = INTERVAL_SEC;
+
+    // ── PARSE RSS XML ──────────────────────────────────────────────────────────
+    function parseRSS(xmlText, feedUrl) {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, 'text/xml');
+      const channelTitle = xml.querySelector('channel > title')?.textContent?.trim() || extractDomain(feedUrl);
+      const items = Array.from(xml.querySelectorAll('item'));
+
+      return items.map(item => {
+        const title = item.querySelector('title')?.textContent?.trim() || '';
+
+        // <link> in RSS is tricky — try multiple approaches
+        let link = '';
+        const linkEl = item.querySelector('link');
+        if (linkEl) {
+          link = linkEl.textContent?.trim() || linkEl.getAttribute('href') || '';
+        }
+        if (!link) {
+          link = item.querySelector('guid')?.textContent?.trim() || '';
+        }
+
+        const pubDate    = item.querySelector('pubDate')?.textContent?.trim() || '';
+        const rawDesc    = item.querySelector('description')?.textContent?.trim() || '';
+        const cleanDesc  = stripHTML(rawDesc).slice(0, 200);
+
+        // Image: try enclosure, media:content, media:thumbnail, og:image in description
+        let thumbnail = '';
+        const enc = item.querySelector('enclosure');
+        if (enc && enc.getAttribute('type')?.startsWith('image')) {
+          thumbnail = enc.getAttribute('url') || '';
+        }
+        if (!thumbnail) {
+          // Try media:content or media:thumbnail (namespace-agnostic)
+          const allEls = Array.from(item.children);
+          for (const el of allEls) {
+            if (el.nodeName.toLowerCase().includes('content') || el.nodeName.toLowerCase().includes('thumbnail')) {
+              thumbnail = el.getAttribute('url') || '';
+              if (thumbnail) break;
+            }
+          }
+        }
+        if (!thumbnail) {
+          // Try extracting img src from description HTML
+          const imgMatch = rawDesc.match(/<img[^>]+src=["']([^"']+)["']/i);
+          if (imgMatch) thumbnail = imgMatch[1];
+        }
+
+        return { title, link, pubDate, description: cleanDesc, thumbnail, sourceName: channelTitle };
+      }).filter(item => item.title && item.link);
+    }
+
+    function stripHTML(html) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      return div.textContent || div.innerText || '';
+    }
+
+    function extractDomain(url) {
+      try { return new URL(url).hostname.replace('www.', ''); }
+      catch { return 'News'; }
+    }
+
+    // ── FETCH ONE FEED ─────────────────────────────────────────────────────────
+    async function fetchFeed(rssUrl) {
+      const res = await fetch(PROXY + encodeURIComponent(rssUrl), { cache: 'no-store' });
+      if (!res.ok) throw new Error('Network error for: ' + rssUrl);
+      const text = await res.text();
+      return parseRSS(text, rssUrl);
+    }
+
+    // ── LOAD SECTION ───────────────────────────────────────────────────────────
+    async function loadSection(key) {
+      const container = document.getElementById('cards-' + key);
+      const isFirst   = !fetchedOnce[key];
+
+      if (isFirst) {
+        container.innerHTML = `<div class="loading"><div class="spinner"></div><span>Loading...</span></div>`;
+      }
+
+      try {
+        const results = await Promise.allSettled(FEEDS[key].map(fetchFeed));
+        let items = [];
+        results.forEach(r => { if (r.status === 'fulfilled') items = items.concat(r.value); });
+
+        if (items.length === 0) throw new Error('No articles loaded. Check your internet connection.');
+
+        // Sort newest first & remove duplicates
+        items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        const seen = new Set();
+        items = items.filter(i => {
+          if (!i.title || seen.has(i.title)) return false;
+          seen.add(i.title);
+          return true;
+        });
+
+        const newItems = isFirst ? [] : items.filter(i => i.link && !seenUrls[key].has(i.link));
+        items.forEach(i => { if (i.link) seenUrls[key].add(i.link); });
+        fetchedOnce[key] = true;
+
+        if (isFirst) {
+          container.innerHTML = '';
+          items.slice(0, 15).forEach(item => container.appendChild(buildCard(item, key, false)));
+        } else if (newItems.length > 0) {
+          newItems.reverse().forEach(item => {
+            const card = buildCard(item, key, true);
+            card.style.animationDelay = '0s';
+            container.prepend(card);
+          });
+        }
+
+      } catch (err) {
+        container.innerHTML = `
+          <div class="error-box">
+            ⚠️ Could not load news.<br>
+            <small>${err.message}</small><br>
+            <button class="retry-btn" onclick="retrySection('${key}')">Try Again</button>
+          </div>`;
+      }
+    }
+
+    function retrySection(key) {
+      fetchedOnce[key] = false;
+      loadSection(key);
+    }
+
+    // ── BUILD CARD ─────────────────────────────────────────────────────────────
+    const colorMap  = { nigeria:'source-ng', world:'source-gl', business:'source-biz', science:'source-sci' };
+    const emojiMap  = { nigeria:'📰', world:'🌐', business:'💼', science:'💉' };
+
+    function buildCard(item, key, isNew) {
+      const card = document.createElement('a');
+      card.className = 'card' + (isNew ? ' is-new' : '');
+      card.href      = item.link;
+      card.target    = '_blank';
+      card.rel       = 'noopener noreferrer';
+
+      const emoji    = emojiMap[key];
+      const color    = colorMap[key];
+      const newBadge = isNew ? `<span class="new-badge">New</span>` : '';
+      const imgHtml  = item.thumbnail
+        ? `<img class="card-image" src="${item.thumbnail}" loading="lazy" alt=""
+             onerror="this.parentNode.innerHTML='<div class=\\'card-image-placeholder\\'>${emoji}</div>'"/>`
+        : `<div class="card-image-placeholder">${emoji}</div>`;
+
+      card.innerHTML = `
+        ${imgHtml}
+        <div class="card-body">
+          <div class="card-source ${color}">${item.sourceName} ${newBadge}</div>
+          <div class="card-title">${item.title}</div>
+          ${item.description ? `<div class="card-desc">${item.description}</div>` : ''}
+          <div class="card-time">🕐 ${getTimeAgo(item.pubDate)}</div>
+        </div>`;
+      return card;
+    }
+
+    function getTimeAgo(dateStr) {
+      if (!dateStr) return 'Recently';
+      const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+      return `${Math.floor(diff / 86400)} day(s) ago`;
+    }
+
+    // ── TAB SWITCHING ──────────────────────────────────────────────────────────
+    function switchMain(tab) {
+      activeMain = tab;
+      ['nigeria','world','business','science'].forEach(s =>
+        document.getElementById('section-' + s).classList.remove('active'));
+      document.getElementById('mtab-ng').className = 'main-tab';
+      document.getElementById('mtab-gl').className = 'main-tab';
+
+      if (tab === 'nigeria') {
+        document.getElementById('section-nigeria').classList.add('active');
+        document.getElementById('mtab-ng').className = 'main-tab active-ng';
+        document.getElementById('sub-tabs').classList.remove('visible');
+        if (!fetchedOnce.nigeria) loadSection('nigeria');
+      } else {
+        document.getElementById('mtab-gl').className = 'main-tab active-gl';
+        document.getElementById('sub-tabs').classList.add('visible');
+        switchSub(activeSub);
+      }
+    }
+
+    function switchSub(sub) {
+      activeSub = sub;
+      ['world','business','science'].forEach(s => {
+        document.getElementById('section-' + s).classList.remove('active');
+        document.getElementById('stab-' + s).className = 'sub-tab';
+      });
+      document.getElementById('section-' + sub).classList.add('active');
+      document.getElementById('stab-' + sub).className = `sub-tab active-${sub}`;
+      if (!fetchedOnce[sub]) loadSection(sub);
+    }
+
+    // ── REFRESH ────────────────────────────────────────────────────────────────
+    function manualRefresh() {
+      clearInterval(countdownInterval);
+      clearTimeout(refreshTimer);
+      const key = activeMain === 'nigeria' ? 'nigeria' : activeSub;
+      loadSection(key);
+      updateTimestamp();
+      startCountdown();
+    }
+
+    function refreshAllLoaded() {
+      Object.keys(fetchedOnce).forEach(k => { if (fetchedOnce[k]) loadSection(k); });
+      updateTimestamp();
+      startCountdown();
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      document.getElementById('last-updated').textContent =
+        `Updated: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    }
+
+    // ── COUNTDOWN ──────────────────────────────────────────────────────────────
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      clearTimeout(refreshTimer);
+      secondsLeft = INTERVAL_SEC;
+      const bar   = document.getElementById('countdown-bar');
+      const label = document.getElementById('countdown-label');
+      bar.style.width = '100%';
+
+      countdownInterval = setInterval(() => {
+        secondsLeft--;
+        bar.style.width = ((secondsLeft / INTERVAL_SEC) * 100) + '%';
+        const m = Math.floor(secondsLeft / 60);
+        const s = (secondsLeft % 60).toString().padStart(2, '0');
+        label.textContent = `Next in ${m}:${s}`;
+        if (secondsLeft <= 0) clearInterval(countdownInterval);
+      }, 1000);
+
+      refreshTimer = setTimeout(refreshAllLoaded, INTERVAL_SEC * 1000);
+    }
+
+    // ── INIT ───────────────────────────────────────────────────────────────────
+    loadSection('nigeria');
+    updateTimestamp();
+    startCountdown();
+  </script>
+</body>
+</html>
