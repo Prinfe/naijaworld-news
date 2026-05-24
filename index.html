@@ -31,9 +31,12 @@
       }
 
       body {
-        background: linear-gradient(to bottom, #07111f, #0f172a);
+        background: linear-gradient(to bottom, #05080f, #1f3a52);
         font-family: "Inter", sans-serif;
         color: var(--text);
+        min-height: 100vh;
+        margin: 0;
+        margin-left: 0px;
       }
 
       header {
@@ -79,14 +82,11 @@
         display: flex;
         flex-direction: column;
         overflow-y: auto;
-        border-right: 1px solid var(--border);
+        border-right: 2px solid var(--accent);
         background: rgba(11, 18, 32, 0.95);
         z-index: 998;
-        padding-top: 20px;
-      }
-
-      body {
-        margin-left: 60px;
+        padding-top: 75px;
+        margin: 0;
       }
 
       .tab {
@@ -98,7 +98,7 @@
         text-align: center;
         font-size: 1.4rem;
         transition: 0.2s ease;
-        border-left: 3px solid transparent;
+        border-left: 0px solid transparent;
         min-height: 40px;
         display: flex;
         align-items: center;
@@ -311,6 +311,18 @@
   </head>
 
   <body>
+    <div class="tabs">
+      <div class="tab active" data-category="nigeria" title="Nigeria">🇳🇬</div>
+      <div class="tab" data-category="world" title="World">🌍</div>
+      <div class="tab" data-category="business" title="Business">💼</div>
+      <div class="tab" data-category="science" title="Science">🔬</div>
+      <div class="tab" data-category="sports" title="Sports">🏈</div>
+      <div class="tab" data-category="entertainment" title="Entertainment">
+        🎬
+      </div>
+      <div class="tab" data-category="books" title="Books">📚</div>
+    </div>
+
     <header>
       <div class="topbar">
         <div class="logo">Naija<span>World</span></div>
@@ -318,18 +330,6 @@
         <div class="search-box">
           <input type="text" id="search" placeholder="Search news..." />
         </div>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" data-category="nigeria" title="Nigeria">🇳🇬</div>
-        <div class="tab" data-category="world" title="World">🌍</div>
-        <div class="tab" data-category="business" title="Business">💼</div>
-        <div class="tab" data-category="science" title="Science">🔬</div>
-        <div class="tab" data-category="sports" title="Sports">🏈</div>
-        <div class="tab" data-category="entertainment" title="Entertainment">
-          🎬
-        </div>
-        <div class="tab" data-category="books" title="Books">📚</div>
       </div>
     </header>
 
