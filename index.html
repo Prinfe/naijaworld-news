@@ -71,22 +71,49 @@
       }
 
       .tabs {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 60px;
         display: flex;
-        overflow-x: auto;
-        border-top: 1px solid var(--border);
+        flex-direction: column;
+        overflow-y: auto;
+        border-right: 1px solid var(--border);
+        background: rgba(11, 18, 32, 0.95);
+        z-index: 998;
+        padding-top: 20px;
+      }
+
+      body {
+        margin-left: 60px;
       }
 
       .tab {
-        padding: 14px 18px;
+        padding: 10px 6px;
         cursor: pointer;
         white-space: nowrap;
         color: var(--muted);
         font-weight: 600;
+        text-align: center;
+        font-size: 1.4rem;
+        transition: 0.2s ease;
+        border-left: 3px solid transparent;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tab:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.05);
       }
 
       .tab.active {
         color: white;
-        border-bottom: 3px solid var(--accent);
+        border-left: 3px solid var(--accent);
+        background: rgba(16, 185, 129, 0.1);
       }
 
       .breaking-ticker {
@@ -100,7 +127,7 @@
         display: inline-block;
         padding: 12px 0;
         padding-left: 100%;
-        animation: ticker 40s linear infinite;
+        animation: ticker 62s linear infinite;
         color: #fbbf24;
         font-weight: 600;
       }
@@ -294,11 +321,15 @@
       </div>
 
       <div class="tabs">
-        <div class="tab active">Nigeria</div>
-        <div class="tab">World</div>
-        <div class="tab">Business</div>
-        <div class="tab">Science</div>
-        <div class="tab">Books</div>
+        <div class="tab active" data-category="nigeria" title="Nigeria">🇳🇬</div>
+        <div class="tab" data-category="world" title="World">🌍</div>
+        <div class="tab" data-category="business" title="Business">💼</div>
+        <div class="tab" data-category="science" title="Science">🔬</div>
+        <div class="tab" data-category="sports" title="Sports">🏈</div>
+        <div class="tab" data-category="entertainment" title="Entertainment">
+          🎬
+        </div>
+        <div class="tab" data-category="books" title="Books">📚</div>
       </div>
     </header>
 
@@ -354,27 +385,56 @@
     <div class="footer">NaijaWorld Premium • Live Global News Platform</div>
 
     <script>
-      const FEEDS = [
-        "https://www.vanguardngr.com/feed/",
-        "https://punchng.com/feed/",
-        "https://guardian.ng/feed/",
-        "https://tribuneonlineng.com/feed/",
-        "https://dailytrust.com/feed/",
-        "https://leadership.ng/feed/",
-        "https://www.channelstv.com/feed/",
-        "https://www.premiumtimesng.com/feed",
-        "https://www.thecable.ng/feed",
-        "https://nairametrics.com/feed/",
-        "https://businessday.ng/feed/",
-        "https://saharareporters.com/feeds/latest/feed.xml",
-        "https://feeds.bbci.co.uk/news/world/rss.xml",
-        "https://rss.cnn.com/rss/edition_world.rss",
-        "https://www.aljazeera.com/xml/rss/all.xml",
-        "https://feeds.skynews.com/feeds/rss/world.xml",
-        "https://feeds.npr.org/1004/rss.xml",
-      ];
+      const FEEDS_BY_CATEGORY = {
+        nigeria: [
+          "https://www.vanguardngr.com/feed/",
+          "https://punchng.com/feed/",
+          "https://guardian.ng/feed/",
+          "https://tribuneonlineng.com/feed/",
+          "https://dailytrust.com/feed/",
+          "https://leadership.ng/feed/",
+          "https://www.channelstv.com/feed/",
+          "https://www.premiumtimesng.com/feed",
+          "https://www.thecable.ng/feed",
+          "https://nairametrics.com/feed/",
+          "https://businessday.ng/feed/",
+          "https://saharareporters.com/feeds/latest/feed.xml",
+        ],
+        world: [
+          "https://feeds.bbci.co.uk/news/world/rss.xml",
+          "https://rss.cnn.com/rss/edition_world.rss",
+          "https://www.aljazeera.com/xml/rss/all.xml",
+          "https://feeds.skynews.com/feeds/rss/world.xml",
+          "https://feeds.npr.org/1004/rss.xml",
+        ],
+        business: [
+          "https://businessday.ng/feed/",
+          "https://nairametrics.com/feed/",
+          "https://rss.cnn.com/rss/edition_business.rss",
+          "https://feeds.bbci.co.uk/news/business/rss.xml",
+        ],
+        science: [
+          "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+          "https://rss.cnn.com/rss/edition_tech.rss",
+          "https://feeds.npr.org/1019/rss.xml",
+        ],
+        sports: [
+          "https://feeds.bbci.co.uk/sport/rss.xml",
+          "https://rss.cnn.com/rss/edition_sport.rss",
+          "https://www.espn.com/espnfootball/rss/rss.xml",
+          "https://www.skysports.com/feed/headlines",
+        ],
+        entertainment: [
+          "https://feeds.bbci.co.uk/entertainment/rss.xml",
+          "https://rss.cnn.com/rss/edition_entertainment.rss",
+          "https://www.aljazeera.com/xml/rss/culture.xml",
+        ],
+        books: [],
+      };
 
       const PROXY = "https://api.allorigins.win/raw?url=";
+      let allNews = [];
+      let currentCategory = "nigeria";
 
       function strip(html) {
         const div = document.createElement("div");
@@ -422,13 +482,24 @@
       }
 
       async function fetchFeed(url) {
-        const res = await fetch(PROXY + encodeURIComponent(url));
-        const text = await res.text();
-        return parseRSS(text, url);
+        try {
+          const res = await fetch(PROXY + encodeURIComponent(url));
+          const text = await res.text();
+          return parseRSS(text, url);
+        } catch (e) {
+          return [];
+        }
       }
 
-      async function loadNews() {
-        const results = await Promise.allSettled(FEEDS.map(fetchFeed));
+      async function loadNewsByCategory(category) {
+        const feeds = FEEDS_BY_CATEGORY[category] || [];
+
+        if (category === "books") {
+          displayNews([]);
+          return;
+        }
+
+        const results = await Promise.allSettled(feeds.map(fetchFeed));
 
         let news = [];
 
@@ -445,17 +516,29 @@
             index === self.findIndex((t) => t.title === item.title),
         );
 
+        allNews = news;
+        displayNews(news);
+      }
+
+      function displayNews(news) {
         const hero = news[0];
 
         if (hero) {
           document.getElementById("hero-title").textContent = hero.title;
           document.getElementById("hero-desc").textContent = hero.desc;
+        } else {
+          document.getElementById("hero-title").textContent =
+            "No news available for this category";
+          document.getElementById("hero-desc").textContent = "Check back soon.";
         }
 
-        document.getElementById("ticker").innerHTML = news
-          .slice(0, 15)
-          .map((n) => "🔥 " + n.title)
-          .join(" ••• ");
+        document.getElementById("ticker").innerHTML =
+          news.length > 0
+            ? news
+                .slice(0, 15)
+                .map((n) => "🔥 " + n.title)
+                .join(" ••• ")
+            : "🔥 Loading news...";
 
         const grid = document.getElementById("news-grid");
 
@@ -468,7 +551,6 @@
           card.target = "_blank";
 
           card.innerHTML = `
-
       ${
         item.img
           ? `<img src="${item.img}" loading="lazy">`
@@ -487,9 +569,20 @@
         });
       }
 
-      loadNews();
+      loadNewsByCategory("nigeria");
 
-      setInterval(loadNews, 300000);
+      setInterval(() => loadNewsByCategory(currentCategory), 300000);
+
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((t) => {
+            t.classList.remove("active");
+          });
+          tab.classList.add("active");
+          currentCategory = tab.dataset.category;
+          loadNewsByCategory(currentCategory);
+        });
+      });
 
       const search = document.getElementById("search");
 
