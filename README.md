@@ -1,6 +1,6 @@
 #Naijaworld-news
 
- ❔ Tech The Project
+ ❔ About The Project
 
 NaijaWorld is a modern AI-powered news aggregation platform that collects and displays news from Nigerian and global media outlets in real time.
 
