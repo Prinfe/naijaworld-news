@@ -1,4 +1,4 @@
-#Naijaworld-news
+Naijaworld-news 
 
  ❔ About The Project
 
@@ -35,9 +35,8 @@ git clone https://github.com/Prinfe/naijaworld-news
 
 🥼 Author
 
- Ode Emmanueloading
-
-Frontend Developer from Nigeria.
+ Ode Emmanuel Onua
+ Frontend Developer from Nigeria.
 
 - GitHub: https://github.com/Prinfe
 
